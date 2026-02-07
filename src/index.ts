@@ -1,5 +1,5 @@
 import express, { type Request, type Response } from 'express';
-import { books, getNextId, type Book } from './models/Book.js';
+import { books, getNextBookId, type Book } from './models/Book.js';
 
 const app = express();
 const hostName = '192.168.20.36';
@@ -21,7 +21,7 @@ app.post("/books", (req: Request, res: Response) => {
     }
 
     const newBook: Book = {
-        id: getNextId(),
+        id: getNextBookId(),
         title,
         author,
         description,
