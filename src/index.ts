@@ -1,14 +1,32 @@
 import express, { type Request, type Response } from 'express';
 import { books, getNextBookId, type Book } from './models/Book.js';
+import {
+    handleGetAllAuthors,
+    handleGetAuthorById,
+    handleCreateAuthor,
+    handleUpdateAuthor,
+    handleDeleteAuthor
+} from './controllers/Authors.controller.js';
+import { getAuthorById } from './services/Authors.service.js';
 
 const app = express();
-const hostName = '192.168.20.36';
+const hostName = 'localhost';
 const port = 3000;
 
 app.use(express.json());
 
+app.get("/api/authors", handleGetAllAuthors);
+app.get("/api/authors/:id", handleGetAuthorById);
+app.post("/api/authors", handleCreateAuthor);
+app.patch("/api/authors/:id", handleUpdateAuthor);
+app.delete("/api/authors/:id", handleDeleteAuthor);
+
 app.get("/books", (req: Request, res: Response) => {
-    res.status(200).json(books);
+    const result = books.map(book => ({
+        ...book,
+        author: getAuthorById(book.author) || book.author
+    }));
+    res.status(200).json(result);
 });
 
 app.post("/books", (req: Request, res: Response) => {
@@ -46,11 +64,12 @@ app.get("/books/:id", (req: Request, res: Response) => {
     }
 
     res.status(200).json({
-        message: "Book found.",
+        ...book,
+        author: getAuthorById(book.author) || book.author
     });
 });
 
-app.patch("/books/:id" , (req: Request, res: Response) => {
+app.patch("/books/:id", (req: Request, res: Response) => {
     const id = Number(req.params.id);
     const book = books.find(b => b.id === id);
     if (!book) {
