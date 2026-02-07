@@ -81,5 +81,5 @@ export const handleDeleteAuthor = (req: Request, res: Response) => {
         return res.status(404).json({ message: "Author not found." });
     }
 
-    res.status(204).send();
+    res.status(200).send("Author deleted successfully.");
 }
